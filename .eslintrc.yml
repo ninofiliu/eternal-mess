@@ -9,4 +9,10 @@ parserOptions:
   sourceType: module
 plugins:
   - '@typescript-eslint'
-rules: {}
+rules:
+  import/extensions: off
+  import/no-unresolved: off
+  max-len: off
+  no-await-in-loop: off
+  no-plusplus: off
+  no-restricted-syntax: off
