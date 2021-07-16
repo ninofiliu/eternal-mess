@@ -5,6 +5,11 @@ module.exports = {
       url: '/',
       static: true,
     },
+    in: {
+      url: '/in',
+      static: true,
+      resolve: false,
+    },
     src: {
       url: '/dist',
     },
