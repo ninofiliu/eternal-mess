@@ -1,4 +1,4 @@
-export type MinShifts = {
+export type Shift = {
   [xOffset: number]: {
     [yOffset: number]: {
       x: number,
@@ -21,7 +21,7 @@ export type GlideSegment = BaseSegment & {
   length: number;
 };
 export type PreparedGlideSegment = GlideSegment & {
-  minShifts: MinShifts;
+  shift: Shift;
 };
 export type MovementSegment = BaseSegment & {
   transform: 'movement';
@@ -29,7 +29,7 @@ export type MovementSegment = BaseSegment & {
   end: number;
 };
 export type PreparedMovementSegment = MovementSegment & {
-  minShiftss: MinShifts[];
+  shifts: Shift[];
 };
 export type Segment = CopySegment | GlideSegment | MovementSegment;
 export type PreparedSegment = PreparedCopySegment | PreparedGlideSegment | PreparedMovementSegment;
