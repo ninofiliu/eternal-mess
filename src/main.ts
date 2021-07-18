@@ -1,1 +1,3 @@
-console.log('soon...');
+import prepare from './prepare';
+
+prepare();

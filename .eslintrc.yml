@@ -16,3 +16,5 @@ rules:
   no-await-in-loop: off
   no-plusplus: off
   no-restricted-syntax: off
+  no-mixed-operators: off
+  no-bitwise: off
