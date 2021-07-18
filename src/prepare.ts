@@ -4,7 +4,10 @@ import { names } from './sources';
 
 const w = 370;
 const h = 188;
-const srcs = names.map((name) => `/in/${w}x${h}/${name}`);
+const srcs = names
+  // echo *.json | fmt -w 1 | rev | colrm 1 12 | rev | tr $'\n' ' ' | cc
+  .filter((name) => !'close-ups.webm face-0.mp4 face-1.mp4 face-2.mp4 face-3.mp4 girl-in-plastic.mp4 hands-0.mp4 hands-1.mp4 hands-plastic-0.mp4 hands-plastic-1.mp4 helmet-0.mp4 helmet-1.mp4'.split(' ').includes(name))
+  .map((name) => `/in/${w}x${h}/${name}`);
 
 export default async () => {
   const eta = document.createElement('p');

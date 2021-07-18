@@ -1,3 +1,3 @@
-import moshLoop from './mosh.loop';
+import moshLoop from './moshLoop';
 
 moshLoop();

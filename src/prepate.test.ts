@@ -1,10 +1,11 @@
 import { approximate, elementEvent } from './lib';
-import shifts from './shifts/370x188/helmet-1.mp4.shifts.json';
+import { fetchShifts } from './sources';
 import { Shift } from './types';
 
 export default async () => {
   const w = 370;
   const h = 188;
+  const name = 'helmet-1.mp4';
 
   const canvas = document.createElement('canvas');
   canvas.width = w;
@@ -13,8 +14,10 @@ export default async () => {
   const ctx = canvas.getContext('2d');
 
   const video = document.createElement('video');
-  video.src = '/in/370x188/helmet-1.mp4';
+  video.src = `/in/${w}x${h}/${name}`;
   await elementEvent(video, 'canplaythrough');
+
+  const shifts = (await fetchShifts(w, h, [name]))[name];
 
   ctx.drawImage(video, 0, 0);
   for (const shift of shifts as Shift[]) {

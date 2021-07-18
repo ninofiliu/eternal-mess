@@ -1,3 +1,5 @@
+import { Shift } from './types';
+
 export const names = 'close-ups.webm face-0.mp4 face-1.mp4 face-2.mp4 face-3.mp4 girl-in-plastic.mp4 gosh.mp4 hands-0.mp4 hands-1.mp4 hands-plastic-0.mp4 hands-plastic-1.mp4 helmet-0.mp4 helmet-1.mp4 helmet-2.mp4 if-the-car-beside-you-moves-ahead.mkv laplander.mkv motocross-0.mp4 motocross-1.mp4 motocross-2.mp4 motocross-3.mp4 motocross-4.mp4 the-island.mp4 trainspgirl-in-plastic.mp4otting.mp4 vordhosbn.mkv'.split(' ');
 
 export const durations = {
@@ -25,4 +27,13 @@ export const durations = {
   'the-island.mp4': 247.897000,
   'trainspotting.mp4': 268.608000,
   'vordhosbn.mkv': 291.381000,
+};
+
+export const fetchShifts = async (w: number, h: number, _names: string[] = names) => {
+  const shifts: {[name: string]: Shift[]} = {};
+  for (const name of _names) {
+    const resp = await fetch(`/in/${w}x${h}/${name}.shifts.json`);
+    shifts[name] = await resp.json() as Shift[];
+  }
+  return shifts;
 };

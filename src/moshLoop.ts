@@ -1,18 +1,14 @@
 import { fps, runCopySegment, runGlideSegment, runMovementSegment } from './lib';
-import { durations } from './sources';
-import { Shift } from './types';
+import { durations, fetchShifts } from './sources';
 
 const w = 370;
 const h = 188;
-const names = ['close-ups.webm', 'girl-in-plastic.mp4', 'helmet-1.mp4'];
+// echo *.json | fmt -w 1 | rev | colrm 1 12 | rev | tr $'\n' ' ' | cc
+const names = 'close-ups.webm face-0.mp4 face-1.mp4 face-2.mp4 face-3.mp4 girl-in-plastic.mp4 hands-0.mp4 hands-1.mp4 hands-plastic-0.mp4 hands-plastic-1.mp4 helmet-0.mp4 helmet-1.mp4'.split(' ');
 
 export default async () => {
   console.time('fetching shifts');
-  const shifts: {[name: string]: Shift[]} = {};
-  for (const name of names) {
-    const resp = await fetch(`/in/${w}x${h}/${name}.shifts.json`);
-    shifts[name] = await resp.json() as Shift[];
-  }
+  const shifts = await fetchShifts(w, h, names);
   console.timeEnd('fetching shifts');
 
   const canvas = document.createElement('canvas');
