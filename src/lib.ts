@@ -185,11 +185,11 @@ export const prepareMovementSegment = async (segment: MovementSegment, renderRoo
   return { ...segment, shifts };
 };
 
-export const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRenderingContext2D, renderRoot: HTMLElement): Promise<void> => {
+export const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRenderingContext2D, renderRoot?: HTMLElement): Promise<void> => {
   const video = document.createElement('video');
   video.src = segment.src;
-  renderRoot.append(video);
-  await elementEvent(video, 'canplaythrough');
+  if (renderRoot) renderRoot.append(video);
+  await elementEvent(video, 'canplay');
   video.currentTime = segment.start;
   await elementEvent(video, 'seeked');
   while (video.currentTime < segment.end) {
@@ -198,7 +198,7 @@ export const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRe
     await elementEvent(video, 'seeked');
     await new Promise((resolve) => requestAnimationFrame(resolve));
   }
-  video.remove();
+  if (renderRoot) video.remove();
 };
 
 export const runGlideSegment = async (segment: PreparedGlideSegment, ctx: CanvasRenderingContext2D): Promise<void> => {

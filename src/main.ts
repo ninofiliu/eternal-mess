@@ -1,3 +1,3 @@
-import prepare from './prepare';
+import moshLoop from './mosh.loop';
 
-prepare();
+moshLoop();
