@@ -1,6 +1,6 @@
 import { elementEvent, fps, getShift } from './lib';
 import { Shift } from './types';
-import names from './names';
+import { names } from './sources';
 
 const w = 370;
 const h = 188;

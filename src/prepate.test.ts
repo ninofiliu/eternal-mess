@@ -1,5 +1,5 @@
 import { approximate, elementEvent } from './lib';
-import shifts from './shifts/helmet-1.mp4.shifts.json';
+import shifts from './shifts/370x188/helmet-1.mp4.shifts.json';
 import { Shift } from './types';
 
 export default async () => {
