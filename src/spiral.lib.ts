@@ -105,3 +105,64 @@ export const createSpiral = (params: SpiralParams) => {
 
   return Object.assign(state, { move });
 };
+
+export const getCoveredImageData = async (src: string, w: number, h: number): Promise<ImageData> => {
+  const image = new Image();
+  image.src = src;
+  await new Promise((r) => { image.onload = r; });
+
+  const srcRatio = image.width / image.height;
+  const dstRatio = w / h;
+  const srcWidth = srcRatio < dstRatio
+    ? image.width
+    : image.width * (dstRatio / srcRatio);
+  const srcHeight = srcRatio < dstRatio
+    ? image.height * (srcRatio / dstRatio)
+    : image.height;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(
+    image,
+    (image.width - srcWidth) / 2,
+    (image.height - srcHeight) / 2,
+    srcWidth,
+    srcHeight,
+    0, 0, w, h,
+  );
+
+  return ctx.getImageData(0, 0, w, h);
+};
+
+export const runImage = async (src: string, ctx: CanvasRenderingContext2D, w: number, h: number): Promise<void> => {
+  const batch = 200;
+  ctx.fillStyle = 'red';
+
+  const imageData = await getCoveredImageData(src, w, h);
+  const channels = [0, 1, 2] as const;
+  const spirals = channels.map((channel) => createSpiral({
+    ctx,
+    imageData,
+    channel,
+    stopAt: 0.5,
+    kind: 'compressed',
+    divider: 10,
+    multiplier: 2,
+    quality: 5,
+  }));
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    console.log(0);
+    for (let i = 0; i < batch; i++) {
+      if (spirals.every((spiral) => spiral.done)) return;
+      for (const spiral of spirals) {
+        ctx.fillRect(spiral.x, spiral.y, 1, 1);
+        spiral.move();
+      }
+    }
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  }
+};

@@ -1,12 +1,13 @@
 import { fps, runCopySegment, runGlideSegment, runMovementSegment, weightedRandomPick } from './mosh.lib';
-import { durations, fetchShifts, names } from './sources';
+import { durations, fetchShiftss, names } from './sources';
+import { runImage } from './spiral.lib';
 
 const w = 370;
 const h = 188;
 
 export default async () => {
   console.time('fetching shifts');
-  const shifts = await fetchShifts(w, h, names);
+  const shifts = await fetchShiftss(w, h, names);
   console.timeEnd('fetching shifts');
 
   const canvas = document.createElement('canvas');
@@ -22,11 +23,11 @@ export default async () => {
     try {
       const name = weightedRandomPick(durations);
       const src = `/in/${w}x${h}/${name}`;
-      const transform = first ? 'copyGlide' : weightedRandomPick({
+      const transform = first ? 'copy' : weightedRandomPick({
+        copy: 1,
         glide: 2,
         movement: 2,
         copyGlide: 3,
-        copy: 1,
       });
       const start = Math.random() * durations[name];
       const duration = Math.random() * Math.min(3, (durations[name] - start));
@@ -78,6 +79,10 @@ export default async () => {
             length: Math.random() * 3,
             shift: shifts[name][~~((start + duration) * fps)],
           }, ctx);
+          break;
+        case 'spiral':
+          await runImage(src, ctx, w, h);
+          break;
       }
     } catch (e) {
       console.log(e);
