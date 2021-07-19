@@ -1,13 +1,17 @@
 import { fps, runCopySegment, runGlideSegment, runMovementSegment, weightedRandomPick } from './mosh.lib';
-import { durations, fetchShiftss, images, names } from './sources';
+import { fetchDurations, fetchShiftss, images } from './sources';
 import { runNewImage, runOverlayImage } from './spiral.lib';
 
 const w = 370;
 const h = 188;
 
 export default async () => {
+  console.time('fetching durations');
+  const durations = await fetchDurations(w, h);
+  console.timeEnd('fetching durations');
+
   console.time('fetching shifts');
-  const shifts = await fetchShiftss(w, h, names);
+  const shiftss = await fetchShiftss(w, h);
   console.timeEnd('fetching shifts');
 
   const canvas = document.createElement('canvas');
@@ -64,8 +68,6 @@ export default async () => {
         const duration = Math.random() * Math.min(3, (durations[name] - start));
         first = false;
 
-        console.log({ name, transform, start, duration });
-
         switch (transform) {
           case 'copy':
             await runCopySegment({
@@ -81,7 +83,7 @@ export default async () => {
               src,
               time: start,
               length: duration,
-              shift: shifts[name][~~(start * fps)],
+              shift: shiftss[name][~~(start * fps)],
             }, ctx);
             break;
           case 'movement':
@@ -90,7 +92,7 @@ export default async () => {
               src,
               start,
               end: start + duration,
-              shifts: shifts[name].splice(
+              shifts: shiftss[name].splice(
                 ~~(start * fps),
                 ~~(duration * fps),
               ),
@@ -108,7 +110,7 @@ export default async () => {
               src,
               time: start,
               length: Math.random() * 3,
-              shift: shifts[name][~~((start + duration) * fps)],
+              shift: shiftss[name][~~((start + duration) * fps)],
             }, ctx);
             break;
         }
