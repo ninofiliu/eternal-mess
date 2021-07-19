@@ -1,4 +1,4 @@
-import { fps, runCopySegment, runGlideSegment, runMovementSegment, weightedRandomPick } from './lib';
+import { fps, runCopySegment, runGlideSegment, runMovementSegment, weightedRandomPick } from './mosh.lib';
 import { durations, fetchShifts, names } from './sources';
 
 const w = 370;

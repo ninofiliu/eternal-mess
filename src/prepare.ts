@@ -1,4 +1,4 @@
-import { elementEvent, fps, getShift } from './lib';
+import { elementEvent, fps, getShift } from './mosh.lib';
 import { Shift } from './types';
 
 export default async (w: number, h: number, name: string) => {

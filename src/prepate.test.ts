@@ -1,4 +1,4 @@
-import { approximate, elementEvent } from './lib';
+import { approximate, elementEvent } from './mosh.lib';
 import { fetchShifts } from './sources';
 import { Shift } from './types';
 
