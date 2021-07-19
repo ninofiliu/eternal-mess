@@ -29,46 +29,13 @@ export const durations = {
   'vordhosbn.mp4': 291.381000,
 };
 
-const dbName = 'eternal-mess';
-const storeName = 'shiftss';
-
-const fetchShifts = (db: IDBDatabase, w: number, h: number, src: string) => new Promise<Shift[]>((resolve, reject) => {
-  const get = db.transaction(storeName, 'readonly').objectStore(storeName).get(src);
-  get.onerror = reject;
-  get.onsuccess = async () => {
-    const maybeShifts: {src: string, shifts: Shift[]} | undefined = get.result;
-    if (maybeShifts) {
-      resolve(maybeShifts.shifts);
-    } else {
-      const resp = await fetch(src);
-      const shifts: Shift[] = await resp.json();
-      const put = db.transaction(storeName, 'readwrite').objectStore(storeName).put({ src, shifts });
-      put.onerror = reject;
-      put.onsuccess = () => {
-        resolve(shifts);
-      };
-    }
-  };
-});
-
-export const fetchShiftss = (w: number, h: number, _names: string[] = names) => new Promise((resolve, reject) => {
+export const fetchShiftss = async (w: number, h: number, _names: string[] = names) => {
   const shifts: {[name: string]: Shift[]} = {};
-
-  let db: IDBDatabase;
-  const or = indexedDB.open(dbName);
-  or.onerror = reject;
-  or.onblocked = reject;
-  or.onupgradeneeded = () => {
-    db = or.result;
-    db.createObjectStore(storeName, { keyPath: 'src' });
-  };
-  or.onsuccess = async () => {
-    db = or.result;
-    for (const name of _names) {
-      const src = `/in/${w}x${h}/${name}.shifts.json`;
-      const shift = await fetchShifts(db, w, h, src);
-      shifts[name] = shift;
-    }
-    resolve(shifts);
-  };
-});
+  await Promise.all(_names.map(async (name) => {
+    const src = `/in/${w}x${h}/${name}.shifts.json`;
+    const resp = await fetch(src);
+    shifts[name] = await resp.json() as Shift[];
+    console.log(`fetched shifts ${Object.keys(shifts).length}/${_names.length}`);
+  }));
+  return shifts;
+};
