@@ -136,33 +136,48 @@ export const getCoveredImageData = async (src: string, w: number, h: number): Pr
   return ctx.getImageData(0, 0, w, h);
 };
 
-export const runImage = async (src: string, ctx: CanvasRenderingContext2D, w: number, h: number): Promise<void> => {
+const runImage = async (imageData: ImageData, ctx: CanvasRenderingContext2D): Promise<void> => {
   const batch = 200;
-  ctx.fillStyle = 'red';
 
-  const imageData = await getCoveredImageData(src, w, h);
   const channels = [0, 1, 2] as const;
+  const palette = channels.map(() => {
+    const index = ~~(Math.random() * imageData.width * imageData.height);
+    const r = imageData.data[4 * index + 0];
+    const g = imageData.data[4 * index + 1];
+    const b = imageData.data[4 * index + 2];
+    return `rgb(${r},${g},${b})`;
+  });
   const spirals = channels.map((channel) => createSpiral({
     ctx,
     imageData,
     channel,
-    stopAt: 0.5,
+    stopAt: 0.2,
     kind: 'compressed',
     divider: 10,
-    multiplier: 2,
-    quality: 5,
+    multiplier: 3,
+    quality: 10,
   }));
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    console.log(0);
     for (let i = 0; i < batch; i++) {
       if (spirals.every((spiral) => spiral.done)) return;
-      for (const spiral of spirals) {
-        ctx.fillRect(spiral.x, spiral.y, 1, 1);
-        spiral.move();
+      for (const channel of channels) {
+        ctx.fillStyle = palette[channel];
+        ctx.fillRect(spirals[channel].x, spirals[channel].y, 1, 1);
+        spirals[channel].move();
       }
     }
     await new Promise((resolve) => requestAnimationFrame(resolve));
   }
+};
+
+export const runNewImage = async (src: string, ctx: CanvasRenderingContext2D, w: number, h: number) => {
+  const imageData = await getCoveredImageData(src, w, h);
+  await runImage(imageData, ctx);
+};
+
+export const runOverlayImage = async (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+  const imageData = ctx.getImageData(0, 0, w, h);
+  await runImage(imageData, ctx);
 };

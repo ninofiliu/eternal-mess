@@ -2,6 +2,8 @@ import { Shift } from './types';
 
 export const names = 'close-ups.webm face-0.mp4 face-1.mp4 face-2.mp4 face-3.mp4 girl-in-plastic.mp4 gosh.mp4 hands-0.mp4 hands-1.mp4 hands-plastic-0.mp4 hands-plastic-1.mp4 helmet-0.mp4 helmet-1.mp4 helmet-2.mp4 if-the-car-beside-you-moves-ahead.mp4 laplander.mp4 motocross-0.mp4 motocross-1.mp4 motocross-2.mp4 motocross-3.mp4 motocross-4.mp4 the-island.mp4 trainspotting.mp4 vordhosbn.mp4'.split(' ');
 
+export const images = 'blurry-hug.jpg chris-s-dog.jpg dead-roses.jpg dirty-mirror.jpg eye.jpg hand.jpg heaven-knows-what.jpg hot-guy.jpg pale-creatures.jpg red-lips.jpg red-shoes.jpg renaissance.jpg robot.jpg sweater.jpg vampire-babe.jpg'.split(' ');
+
 export const durations = {
   'close-ups.webm': 103.081000,
   'face-0.mp4': 13.033333,

@@ -1,6 +1,6 @@
 import { fps, runCopySegment, runGlideSegment, runMovementSegment, weightedRandomPick } from './mosh.lib';
-import { durations, fetchShiftss, names } from './sources';
-import { runImage } from './spiral.lib';
+import { durations, fetchShiftss, images, names } from './sources';
+import { runNewImage, runOverlayImage } from './spiral.lib';
 
 const w = 370;
 const h = 188;
@@ -21,68 +21,75 @@ export default async () => {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
-      const name = weightedRandomPick(durations);
-      const src = `/in/${w}x${h}/${name}`;
-      const transform = first ? 'copy' : weightedRandomPick({
-        copy: 1,
-        glide: 2,
-        movement: 2,
-        copyGlide: 3,
-      });
-      const start = Math.random() * durations[name];
-      const duration = Math.random() * Math.min(3, (durations[name] - start));
-      first = false;
+      if (Math.random() < 0.5) {
+        if (Math.random() < 0.8) {
+          await runOverlayImage(ctx, w, h);
+        } else {
+          const name = images[~~(Math.random() * images.length)];
+          const src = `/in/images/${name}`;
+          await runNewImage(src, ctx, w, h);
+        }
+      } else {
+        const name = weightedRandomPick(durations);
+        const src = `/in/${w}x${h}/${name}`;
+        const transform = first ? 'copy' : weightedRandomPick({
+          copy: 1,
+          glide: 2,
+          movement: 2,
+          copyGlide: 3,
+        });
+        const start = Math.random() * durations[name];
+        const duration = Math.random() * Math.min(3, (durations[name] - start));
+        first = false;
 
-      console.log({ name, transform, start, duration });
+        console.log({ name, transform, start, duration });
 
-      switch (transform) {
-        case 'copy':
-          await runCopySegment({
-            transform: 'copy',
-            src,
-            start,
-            end: start + duration,
-          }, ctx);
-          break;
-        case 'glide':
-          await runGlideSegment({
-            transform: 'glide',
-            src,
-            time: start,
-            length: duration,
-            shift: shifts[name][~~(start * fps)],
-          }, ctx);
-          break;
-        case 'movement':
-          await runMovementSegment({
-            transform: 'movement',
-            src,
-            start,
-            end: start + duration,
-            shifts: shifts[name].splice(
-              ~~(start * fps),
-              ~~(duration * fps),
-            ),
-          }, ctx);
-          break;
-        case 'copyGlide':
-          await runCopySegment({
-            transform: 'copy',
-            src,
-            start,
-            end: start + duration,
-          }, ctx);
-          await runGlideSegment({
-            transform: 'glide',
-            src,
-            time: start,
-            length: Math.random() * 3,
-            shift: shifts[name][~~((start + duration) * fps)],
-          }, ctx);
-          break;
-        case 'spiral':
-          await runImage(src, ctx, w, h);
-          break;
+        switch (transform) {
+          case 'copy':
+            await runCopySegment({
+              transform: 'copy',
+              src,
+              start,
+              end: start + duration,
+            }, ctx);
+            break;
+          case 'glide':
+            await runGlideSegment({
+              transform: 'glide',
+              src,
+              time: start,
+              length: duration,
+              shift: shifts[name][~~(start * fps)],
+            }, ctx);
+            break;
+          case 'movement':
+            await runMovementSegment({
+              transform: 'movement',
+              src,
+              start,
+              end: start + duration,
+              shifts: shifts[name].splice(
+                ~~(start * fps),
+                ~~(duration * fps),
+              ),
+            }, ctx);
+            break;
+          case 'copyGlide':
+            await runCopySegment({
+              transform: 'copy',
+              src,
+              start,
+              end: start + duration,
+            }, ctx);
+            await runGlideSegment({
+              transform: 'glide',
+              src,
+              time: start,
+              length: Math.random() * 3,
+              shift: shifts[name][~~((start + duration) * fps)],
+            }, ctx);
+            break;
+        }
       }
     } catch (e) {
       console.log(e);
