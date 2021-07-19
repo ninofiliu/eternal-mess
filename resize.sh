@@ -38,9 +38,9 @@ do
   fi
 
   echo "$base: cropping..."
-  ffmpeg -v error -i $file -filter:v "crop=$sw:$sh:$sx:$sy" $base
+  ffmpeg -i $file -filter:v "crop=$sw:$sh:$sx:$sy" $base
   echo "$base: resizing..."
-  ffmpeg -v error -i $base -vf scale=$w:$h $out
+  ffmpeg -i $base -vf scale=$w:$h $out
   rm $base
 
 done

@@ -1,5 +1,9 @@
 /** @type {import('snowpack').SnowpackUserConfig} */
 module.exports = {
+  exclude: [
+    'node_modules/**/*',
+    'in/**/*',
+  ],
   mount: {
     public: {
       url: '/',

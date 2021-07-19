@@ -17,10 +17,16 @@ export default async () => {
   document.body.append(canvas);
   const ctx = canvas.getContext('2d');
 
+  // @ts-ignore
+  const stream = canvas.captureStream();
+  const recorder = new MediaRecorder(stream);
+  recorder.start();
+
   let first = true;
 
   // eslint-disable-next-line no-constant-condition
-  while (true) {
+  for (let i = 0; i < 10; i++) {
+    console.log(i);
     try {
       const name = names[~~(Math.random() * names.length)];
       const src = `/in/${w}x${h}/${name}`;
@@ -66,4 +72,13 @@ export default async () => {
       console.log(e);
     }
   }
+
+  recorder.addEventListener('dataavailable', (evt) => {
+    const blob = evt.data;
+    const src = URL.createObjectURL(blob);
+    const video = document.createElement('video');
+    video.src = src;
+    document.body.append(video);
+  });
+  recorder.stop();
 };

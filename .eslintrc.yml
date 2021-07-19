@@ -21,3 +21,4 @@ rules:
   default-case: off
   object-curly-newline: off
   no-console: off
+  no-continue: off
