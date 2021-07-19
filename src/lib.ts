@@ -218,3 +218,14 @@ export const runMovementSegment = async (segment: PreparedMovementSegment, ctx: 
     await new Promise((resolve) => requestAnimationFrame(resolve));
   }
 };
+
+export const weightedRandomPick = (weights: Record<string, number>) => {
+  const r = Math.random();
+  let cumWeight = 0;
+  const totalWeight = Object.values(weights).reduce((sum, weight) => sum + weight, 0);
+  for (const value in weights) {
+    cumWeight += weights[value];
+    if (cumWeight / totalWeight > r) return value;
+  }
+  return Object.keys(weights).splice(-1)[0];
+};

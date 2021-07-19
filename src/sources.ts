@@ -31,9 +31,18 @@ export const durations = {
 
 export const fetchShifts = async (w: number, h: number, _names: string[] = names) => {
   const shifts: {[name: string]: Shift[]} = {};
-  await Promise.all(_names.map(async (name) => {
-    const resp = await fetch(`/in/${w}x${h}/${name}.shifts.json`);
+  const cache = await caches.open('infinite');
+  for (const name of _names) {
+    const url = `/in/${w}x${h}/${name}.shifts.json`;
+    if (await cache.match(url)) {
+      console.log('cache hit');
+    } else {
+      console.log('cache miss');
+      await cache.add(url);
+    }
+    const resp = await cache.match(url);
+    if (!resp) throw new Error('resp is still undefined');
     shifts[name] = await resp.json() as Shift[];
-  }));
+  }
   return shifts;
 };

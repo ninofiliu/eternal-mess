@@ -2,6 +2,7 @@
   "compilerOptions": {
     "downlevelIteration": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM"]
   }
 }

@@ -1,4 +1,4 @@
-import { fps, runCopySegment, runGlideSegment, runMovementSegment } from './lib';
+import { fps, runCopySegment, runGlideSegment, runMovementSegment, weightedRandomPick } from './lib';
 import { durations, fetchShifts, names } from './sources';
 
 const w = 370;
@@ -20,14 +20,19 @@ export default async () => {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
-      const name = names[~~(Math.random() * names.length)];
+      const name = weightedRandomPick(durations);
       const src = `/in/${w}x${h}/${name}`;
-      const transform = first ? 'copyGlide' : ['copy', 'glide', 'movement', 'copyGlide'][~~(Math.random() * 4)];
+      const transform = first ? 'copyGlide' : weightedRandomPick({
+        glide: 2,
+        movement: 2,
+        copyGlide: 3,
+        copy: 1,
+      });
       const start = Math.random() * durations[name];
       const duration = Math.random() * Math.min(3, (durations[name] - start));
       first = false;
 
-      console.log({ name, src, transform, start, duration });
+      console.log({ name, transform, start, duration });
 
       switch (transform) {
         case 'copy':
