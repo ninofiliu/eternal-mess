@@ -29,7 +29,7 @@ export default async (w: number, h: number, name: string) => {
     await elementEvent(video, 'seeked');
     ctx.drawImage(video, 0, 0);
     const real = ctx.getImageData(0, 0, w, h);
-    const shift = getShift(real, previous);
+    const shift = getShift(previous, real);
     shifts.push(shift);
     previous = real;
 
