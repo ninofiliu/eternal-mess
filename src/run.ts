@@ -18,10 +18,32 @@ export default async () => {
 
   let first = true;
 
+  let recording = false;
+  let recorder: MediaRecorder;
+  document.addEventListener('keypress', ({ key }) => {
+    if (key !== 'p') return;
+    if (recording) {
+      recorder.addEventListener('dataavailable', ({ data }) => {
+        const video = document.createElement('video');
+        video.src = URL.createObjectURL(data);
+        video.controls = true;
+        document.body.append(video);
+      }, { once: true });
+      recorder.stop();
+      recording = false;
+    } else {
+      // @ts-ignore
+      const stream = canvas.captureStream();
+      recorder = new MediaRecorder(stream);
+      recorder.start();
+      recording = true;
+    }
+  });
+
   // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
-      if (Math.random() < 0.5) {
+      if (Math.random() < 0.2) {
         if (Math.random() < 0.8) {
           await runOverlayImage(ctx, w, h);
         } else {

@@ -196,7 +196,7 @@ export const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRe
     ctx.drawImage(video, 0, 0);
     video.currentTime += 1 / fps;
     await elementEvent(video, 'seeked');
-    await new Promise((resolve) => requestAnimationFrame(resolve));
+    await new Promise((resolve) => setTimeout(resolve, 1000 / fps));
   }
   if (renderRoot) video.remove();
 };
