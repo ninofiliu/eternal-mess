@@ -1,10 +1,10 @@
-import moshLoop from './moshLoop';
+import run from './run';
 import prepare from './prepare';
 
 const sp = new URLSearchParams(window.location.search);
 const fn = sp.get('fn');
 
-if (fn === 'moshLoop') moshLoop();
+if (fn === 'run') run();
 if (fn === 'prepare') {
   const w = +sp.get('w');
   const h = +sp.get('h');
