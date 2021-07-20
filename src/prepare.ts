@@ -52,4 +52,7 @@ export default async (w: number, h: number, name: string) => {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+  fetch(`http://localhost:8081/${name}`).finally(() => {
+    window.close();
+  });
 };

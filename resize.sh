@@ -24,7 +24,7 @@ do
 
   vw=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=s=x:p=0 $file)
   vh=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=s=x:p=0 $file)
-  if [ $(($vw / $vh)) -gt $(($w / $h )) ]
+  if [ $(($vw * $h)) -gt $(($vh * $w)) ]
   then
     sw=$(($vh * $w / $h))
     sh=$vh
