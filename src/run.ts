@@ -2,8 +2,8 @@ import { fps, runCopySegment, runGlideSegment, runMovementSegment, weightedRando
 import { fetchDurations, fetchShiftss, images } from './sources';
 import { runNewImage, runOverlayImage } from './spiral.lib';
 
-const w = 370;
-const h = 188;
+const w = 800;
+const h = 450;
 
 export default async () => {
   console.time('fetching durations');
@@ -17,8 +17,11 @@ export default async () => {
   const canvas = document.createElement('canvas');
   canvas.width = w;
   canvas.height = h;
-  document.body.append(canvas);
   const ctx = canvas.getContext('2d');
+
+  document.body.style.margin = '0';
+  document.body.style.overflow = 'hidden';
+  document.body.append(canvas);
 
   let first = true;
 
