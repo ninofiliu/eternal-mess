@@ -66,16 +66,17 @@ export default async () => {
           await runNewImage(src, ctx, w, h);
         }
       } else {
-        const name = weightedRandomPick(durations);
+        const name = names[~~(Math.random() * names.length)];
         const src = `/in/${w}x${h}/${name}`;
         const transform = first ? 'copy' : weightedRandomPick({
           copy: 1,
           glide: 2,
           movement: 2,
           copyGlide: 3,
+          repeat: 2,
         });
         const start = Math.random() * durations[name];
-        const duration = Math.random() * Math.min(3, (durations[name] - start));
+        const duration = Math.random() * Math.min(transform === 'copy' ? 1 : 4, (durations[name] - start));
         first = false;
 
         switch (transform) {
@@ -123,6 +124,25 @@ export default async () => {
               shift: shiftss[name][~~((start + duration) * fps)],
             }, ctx);
             break;
+          case 'repeat':
+            await runCopySegment({
+              transform: 'copy',
+              src,
+              start,
+              end: start + duration,
+            }, ctx);
+            for (let i = 0; i < 5; i++) {
+              await runMovementSegment({
+                transform: 'movement',
+                src,
+                start,
+                end: start + duration,
+                shifts: shiftss[name].splice(
+                  ~~(start * fps),
+                  ~~(duration * fps),
+                ),
+              }, ctx);
+            }
         }
       }
     } catch (e) {
