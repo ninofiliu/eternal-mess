@@ -1,11 +1,17 @@
 import { fps, runCopySegment, runGlideSegment, runMovementSegment, weightedRandomPick } from './mosh.lib';
-import { fetchDurations, fetchShiftss, images } from './sources';
+import { fetchDurations, fetchShiftss, images, names } from './sources';
 import { runNewImage, runOverlayImage } from './spiral.lib';
 
-const w = 800;
-const h = 450;
+const w = 480;
+const h = 270;
 
 export default async () => {
+  const audio = new Audio('/poem.mp3');
+  audio.loop = true;
+  audio.addEventListener('canplay', () => {
+    audio.play();
+  });
+
   console.time('fetching durations');
   const durations = await fetchDurations(w, h);
   console.timeEnd('fetching durations');
@@ -21,6 +27,7 @@ export default async () => {
 
   document.body.style.margin = '0';
   document.body.style.overflow = 'hidden';
+  document.body.style.cursor = 'none';
   document.body.append(canvas);
 
   let first = true;
