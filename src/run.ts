@@ -1,11 +1,22 @@
 import { fps, runCopySegment, runGlideSegment, runMovementSegment, weightedRandomPick } from './mosh.lib';
-import { fetchDurations, fetchShiftss, images, names } from './sources';
-import { runNewImage, runOverlayImage } from './spiral.lib';
+import { fetchDurations, fetchShiftss, images } from './sources';
+import { runNewImage, runOverlayImage, runRevealImage } from './spiral.lib';
+import { Flavor } from './types';
 
 const w = 480;
 const h = 270;
 
-export default async () => {
+export default async (flavor: Flavor) => {
+  document.body.style.margin = '0';
+  document.body.style.overflow = 'hidden';
+  document.body.style.cursor = 'none';
+  document.body.style.backgroundColor = 'black';
+  document.body.style.fontFamily = 'monospace';
+  document.body.style.color = 'white';
+
+  const fetchElt = document.createElement('p');
+  document.body.append(fetchElt);
+
   const audio = new Audio('/poem.mp3');
   audio.loop = true;
   audio.addEventListener('canplay', () => {
@@ -13,21 +24,20 @@ export default async () => {
   });
 
   console.time('fetching durations');
-  const durations = await fetchDurations(w, h);
+  const durations = await fetchDurations(flavor.names, w, h, fetchElt);
   console.timeEnd('fetching durations');
 
   console.time('fetching shifts');
-  const shiftss = await fetchShiftss(w, h);
+  const shiftss = await fetchShiftss(flavor.names, w, h, fetchElt);
   console.timeEnd('fetching shifts');
+
+  fetchElt.remove();
 
   const canvas = document.createElement('canvas');
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext('2d');
 
-  document.body.style.margin = '0';
-  document.body.style.overflow = 'hidden';
-  document.body.style.cursor = 'none';
   document.body.append(canvas);
 
   let first = true;
@@ -54,10 +64,19 @@ export default async () => {
     }
   });
 
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, w, h);
+
   // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
-      if (Math.random() < 0.2) {
+      const name = images[~~(Math.random() * images.length)];
+      const src = `/in/images/${name}`;
+      await runRevealImage(src, ctx, w, h);
+      // eslint-disable-next-line no-self-compare, no-constant-condition
+      if (0 === 0) continue;
+
+      if (Math.random() < flavor.spiralWeight) {
         if (Math.random() < 0.8) {
           await runOverlayImage(ctx, w, h);
         } else {
@@ -66,17 +85,11 @@ export default async () => {
           await runNewImage(src, ctx, w, h);
         }
       } else {
-        const name = names[~~(Math.random() * names.length)];
+        const name = flavor.names[~~(Math.random() * flavor.names.length)];
         const src = `/in/${w}x${h}/${name}`;
-        const transform = first ? 'copy' : weightedRandomPick({
-          copy: 1,
-          glide: 2,
-          movement: 2,
-          copyGlide: 3,
-          repeat: 2,
-        });
-        const start = Math.random() * durations[name];
-        const duration = Math.random() * Math.min(transform === 'copy' ? 1 : 4, (durations[name] - start));
+        const transform = first ? 'copy' : weightedRandomPick(flavor.transformWeights);
+        const duration = Math.random() * Math.min(durations[name], flavor.maxDuration);
+        const start = Math.random() * (durations[name] - duration);
         first = false;
 
         switch (transform) {

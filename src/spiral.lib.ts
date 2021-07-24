@@ -137,7 +137,7 @@ export const getCoveredImageData = async (src: string, w: number, h: number): Pr
 };
 
 const runImage = async (imageData: ImageData, ctx: CanvasRenderingContext2D): Promise<void> => {
-  const batch = 200;
+  const batch = 300;
 
   const channels = [0, 1, 2] as const;
   const palette = channels.map(() => {
@@ -151,10 +151,10 @@ const runImage = async (imageData: ImageData, ctx: CanvasRenderingContext2D): Pr
     ctx,
     imageData,
     channel,
-    stopAt: 0.2,
+    stopAt: 0.15,
     kind: 'compressed',
     divider: 10,
-    multiplier: 3,
+    multiplier: 4,
     quality: 10,
   }));
 
@@ -180,4 +180,36 @@ export const runNewImage = async (src: string, ctx: CanvasRenderingContext2D, w:
 export const runOverlayImage = async (ctx: CanvasRenderingContext2D, w: number, h: number) => {
   const imageData = ctx.getImageData(0, 0, w, h);
   await runImage(imageData, ctx);
+};
+
+export const runRevealImage = async (src: string, ctx: CanvasRenderingContext2D, w: number, h: number) => {
+  const batch = 300;
+
+  const imageData = await getCoveredImageData(src, w, h);
+  const spiral = createSpiral({
+    ctx,
+    imageData,
+    channel: 0,
+    stopAt: 0.3,
+    kind: 'compressed',
+    divider: 7,
+    multiplier: 6,
+    quality: 5,
+  });
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    for (let i = 0; i < batch; i++) {
+      if (spiral.done) return;
+
+      const r = imageData.data[4 * (w * spiral.y + spiral.x) + 0];
+      const g = imageData.data[4 * (w * spiral.y + spiral.x) + 1];
+      const b = imageData.data[4 * (w * spiral.y + spiral.x) + 2];
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.fillRect(spiral.x, spiral.y, 1, 1);
+
+      spiral.move();
+    }
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  }
 };

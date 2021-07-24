@@ -33,3 +33,16 @@ export type PreparedMovementSegment = MovementSegment & {
 };
 export type Segment = CopySegment | GlideSegment | MovementSegment;
 export type PreparedSegment = PreparedCopySegment | PreparedGlideSegment | PreparedMovementSegment;
+
+export type Flavor = {
+  names: string[];
+  spiralWeight: number;
+  maxDuration: number;
+  transformWeights: {
+    copy: number;
+    glide: number;
+    movement: number;
+    copyGlide: number;
+    repeat: number;
+  }
+}
