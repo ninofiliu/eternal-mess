@@ -398,7 +398,8 @@ export const allNames = [
   'walk-in-the-park-30.mp4',
 ];
 
-export const images = 'blurry-hug.jpg chris-s-dog.jpg dead-roses.jpg dirty-mirror.jpg eye.jpg hand.jpg heaven-knows-what.jpg hot-guy.jpg pale-creatures.jpg red-lips.jpg red-shoes.jpg renaissance.jpg robot.jpg sweater.jpg vampire-babe.jpg'.split(' ');
+export const defaultImages = 'blurry-hug.jpg chris-s-dog.jpg dead-roses.jpg dirty-mirror.jpg eye.jpg hand.jpg heaven-knows-what.jpg hot-guy.jpg pale-creatures.jpg red-lips.jpg red-shoes.jpg renaissance.jpg robot.jpg sweater.jpg vampire-babe.jpg'.split(' ');
+export const eyeImages = [...Array(21).keys()].map((i) => `eyes/${i}.jpg`);
 
 export const fetchDurations = async (names: string[], w: number, h: number, fetchElt: HTMLElement) => {
   const durations: Record<string, number> = {};

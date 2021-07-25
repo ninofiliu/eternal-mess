@@ -35,7 +35,8 @@ export type Segment = CopySegment | GlideSegment | MovementSegment;
 export type PreparedSegment = PreparedCopySegment | PreparedGlideSegment | PreparedMovementSegment;
 
 export type Flavor = {
-  names: string[]
+  names: string[];
+  imageNames: string[];
   maxDuration: number;
   weigths: {
     new: number;

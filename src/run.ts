@@ -1,5 +1,5 @@
 import { fps, runCopySegment, runGlideSegment, runMovementSegment, weightedRandomPick } from './mosh.lib';
-import { fetchDurations, fetchShiftss, images } from './sources';
+import { fetchDurations, fetchShiftss } from './sources';
 import { runNewImage, runOverlayImage, runRevealImage } from './spiral.lib';
 import { Flavor } from './types';
 
@@ -74,7 +74,7 @@ export default async (flavor: Flavor) => {
       const src = `/in/${w}x${h}/${name}`;
       const duration = Math.random() * Math.min(durations[name], flavor.maxDuration);
       const start = Math.random() * (durations[name] - duration);
-      const imageName = images[~~(Math.random() * images.length)];
+      const imageName = flavor.imageNames[~~(Math.random() * flavor.imageNames.length)];
       const imageSrc = `/in/images/${imageName}`;
 
       const transform = first ? 'copy' : weightedRandomPick(flavor.weigths);
