@@ -6,7 +6,7 @@ const sp = new URLSearchParams(window.location.search);
 const fn = sp.get('fn');
 
 if (fn === 'run') {
-  run(flavors.main);
+  run(flavors.alexia);
 }
 if (fn === 'prepare') {
   const w = +sp.get('w');

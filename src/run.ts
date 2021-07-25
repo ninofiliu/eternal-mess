@@ -70,47 +70,80 @@ export default async (flavor: Flavor) => {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
-      const name = images[~~(Math.random() * images.length)];
-      const src = `/in/images/${name}`;
-      await runRevealImage(src, ctx, w, h);
-      // eslint-disable-next-line no-self-compare, no-constant-condition
-      if (0 === 0) continue;
+      const name = flavor.names[~~(Math.random() * flavor.names.length)];
+      const src = `/in/${w}x${h}/${name}`;
+      const duration = Math.random() * Math.min(durations[name], flavor.maxDuration);
+      const start = Math.random() * (durations[name] - duration);
+      const imageName = images[~~(Math.random() * images.length)];
+      const imageSrc = `/in/images/${imageName}`;
 
-      if (Math.random() < flavor.spiralWeight) {
-        if (Math.random() < 0.8) {
+      const transform = first ? 'copy' : weightedRandomPick(flavor.weigths);
+      first = false;
+
+      console.log(transform, name);
+
+      switch (transform) {
+        case 'new':
+          await runNewImage(imageSrc, ctx, w, h);
+          break;
+        case 'overlay':
           await runOverlayImage(ctx, w, h);
-        } else {
-          const name = images[~~(Math.random() * images.length)];
-          const src = `/in/images/${name}`;
-          await runNewImage(src, ctx, w, h);
-        }
-      } else {
-        const name = flavor.names[~~(Math.random() * flavor.names.length)];
-        const src = `/in/${w}x${h}/${name}`;
-        const transform = first ? 'copy' : weightedRandomPick(flavor.transformWeights);
-        const duration = Math.random() * Math.min(durations[name], flavor.maxDuration);
-        const start = Math.random() * (durations[name] - duration);
-        first = false;
-
-        switch (transform) {
-          case 'copy':
-            await runCopySegment({
-              transform: 'copy',
-              src,
-              start,
-              end: start + duration,
-            }, ctx);
-            break;
-          case 'glide':
-            await runGlideSegment({
-              transform: 'glide',
-              src,
-              time: start,
-              length: duration,
-              shift: shiftss[name][~~(start * fps)],
-            }, ctx);
-            break;
-          case 'movement':
+          break;
+        case 'reveal':
+          await runRevealImage(imageSrc, ctx, w, h);
+          break;
+        case 'copy':
+          await runCopySegment({
+            transform: 'copy',
+            src,
+            start,
+            end: start + duration,
+          }, ctx);
+          break;
+        case 'glide':
+          await runGlideSegment({
+            transform: 'glide',
+            src,
+            time: start,
+            length: duration,
+            shift: shiftss[name][~~(start * fps)],
+          }, ctx);
+          break;
+        case 'movement':
+          await runMovementSegment({
+            transform: 'movement',
+            src,
+            start,
+            end: start + duration,
+            shifts: shiftss[name].splice(
+              ~~(start * fps),
+              ~~(duration * fps),
+            ),
+          }, ctx);
+          break;
+        case 'copyGlide':
+          await runCopySegment({
+            transform: 'copy',
+            src,
+            start,
+            end: start + duration,
+          }, ctx);
+          await runGlideSegment({
+            transform: 'glide',
+            src,
+            time: start,
+            length: Math.random() * 3,
+            shift: shiftss[name][~~((start + duration) * fps)],
+          }, ctx);
+          break;
+        case 'repeat':
+          await runCopySegment({
+            transform: 'copy',
+            src,
+            start,
+            end: start + duration,
+          }, ctx);
+          for (let i = 0; i < 5; i++) {
             await runMovementSegment({
               transform: 'movement',
               src,
@@ -121,42 +154,7 @@ export default async (flavor: Flavor) => {
                 ~~(duration * fps),
               ),
             }, ctx);
-            break;
-          case 'copyGlide':
-            await runCopySegment({
-              transform: 'copy',
-              src,
-              start,
-              end: start + duration,
-            }, ctx);
-            await runGlideSegment({
-              transform: 'glide',
-              src,
-              time: start,
-              length: Math.random() * 3,
-              shift: shiftss[name][~~((start + duration) * fps)],
-            }, ctx);
-            break;
-          case 'repeat':
-            await runCopySegment({
-              transform: 'copy',
-              src,
-              start,
-              end: start + duration,
-            }, ctx);
-            for (let i = 0; i < 5; i++) {
-              await runMovementSegment({
-                transform: 'movement',
-                src,
-                start,
-                end: start + duration,
-                shifts: shiftss[name].splice(
-                  ~~(start * fps),
-                  ~~(duration * fps),
-                ),
-              }, ctx);
-            }
-        }
+          }
       }
     } catch (e) {
       console.log(e);

@@ -11,7 +11,7 @@ h=$2
 dir=in/${w}x${h}
 mkdir -p $dir
 
-for file in in/src/*
+for file in in/src-800/*
 do
 
   base=$(basename $file)

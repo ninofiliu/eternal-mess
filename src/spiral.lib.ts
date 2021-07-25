@@ -192,7 +192,7 @@ export const runRevealImage = async (src: string, ctx: CanvasRenderingContext2D,
     channel: 0,
     stopAt: 0.3,
     kind: 'compressed',
-    divider: 7,
+    divider: 10,
     multiplier: 6,
     quality: 5,
   });
