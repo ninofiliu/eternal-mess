@@ -16,7 +16,6 @@ export default async (flavor: Flavor) => {
   document.body.style.margin = "0";
   document.body.style.overflow = "hidden";
   document.body.style.cursor = "none";
-  document.body.style.backgroundColor = "black";
   document.body.style.fontFamily = "monospace";
   document.body.style.color = "white";
 
