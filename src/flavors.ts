@@ -1906,6 +1906,32 @@ const flavors: Record<string, Flavor> = {
       repeat: 0,
     },
   },
+  didi: {
+    names: randomPick(
+      allNames.filter((name) =>
+        [
+          "baby",
+          "collapse",
+          "flexcalibur",
+          "hyper-reality",
+          "walk-in-the-park",
+        ].some((start) => name.startsWith(start))
+      ),
+      20
+    ),
+    imageNames: defaultImages,
+    maxDuration: 4,
+    weigths: {
+      reveal: 3,
+      overlay: 4,
+      new: 0,
+      copy: 1,
+      glide: 0,
+      movement: 5,
+      copyGlide: 2,
+      repeat: 5,
+    },
+  },
 };
 
 export default flavors;
