@@ -41,6 +41,7 @@ export default async (flavor: Flavor) => {
   const canvas = document.createElement("canvas");
   canvas.width = w;
   canvas.height = h;
+  canvas.style.imageRendering = "pixelated";
   const ctx = canvas.getContext("2d");
 
   document.body.append(canvas);
