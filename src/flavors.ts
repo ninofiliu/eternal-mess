@@ -1886,6 +1886,26 @@ const flavors: Record<string, Flavor> = {
       repeat: 0,
     },
   },
+  mollyAndGloria: {
+    names: randomPick(
+      allNames.filter((name) =>
+        ["baby"].some((start) => name.startsWith(start))
+      ),
+      20
+    ),
+    imageNames: defaultImages,
+    maxDuration: 5,
+    weigths: {
+      reveal: 0,
+      overlay: 2,
+      new: 0,
+      copy: 1,
+      glide: 2,
+      movement: 2,
+      copyGlide: 10,
+      repeat: 0,
+    },
+  },
 };
 
 export default flavors;
