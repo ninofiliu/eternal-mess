@@ -1,24 +1,19 @@
 /** @type {import('snowpack').SnowpackUserConfig} */
 module.exports = {
-  exclude: [
-    'node_modules/**/*',
-    'in/**/*',
-  ],
+  exclude: ["node_modules/**/*", "in/**/*"],
   mount: {
     public: {
-      url: '/',
+      url: "/",
       static: true,
     },
     in: {
-      url: '/in',
+      url: "/in",
       static: true,
       resolve: false,
     },
     src: {
-      url: '/dist',
+      url: "/dist",
     },
   },
-  plugins: [
-    '@snowpack/plugin-typescript',
-  ],
+  plugins: ["@snowpack/plugin-typescript"],
 };

@@ -6,27 +6,28 @@ export type SpiralParams = {
   stopAt: number;
 } & (
   | {
-    kind: 'basic';
-    /** between 0 and 1 */
-    treshold: number;
-  }
+      kind: "basic";
+      /** between 0 and 1 */
+      treshold: number;
+    }
   | {
-    kind: 'linear';
-    /** starting at 1 */
-    divider: number;
-  }
+      kind: "linear";
+      /** starting at 1 */
+      divider: number;
+    }
   | {
-    kind: 'looped';
-    /** starting at 1 */
-    divider: number;
-    /** starting at 1 */
-    multiplier: number;
-  } | {
-    kind: 'compressed';
-    divider: number;
-    multiplier: number;
-    quality: number;
-  }
+      kind: "looped";
+      /** starting at 1 */
+      divider: number;
+      /** starting at 1 */
+      multiplier: number;
+    }
+  | {
+      kind: "compressed";
+      divider: number;
+      multiplier: number;
+      quality: number;
+    }
 );
 
 export const createSpiral = (params: SpiralParams) => {
@@ -40,20 +41,30 @@ export const createSpiral = (params: SpiralParams) => {
 
   const stopFn = (() => {
     switch (params.kind) {
-      case 'basic': return (l: number) => l < params.treshold;
-      case 'linear': return (l: number, i: number) => l < (i / params.divider);
-      case 'looped': return (l: number, i: number) => ((l * params.multiplier) % 1) < (i / params.divider);
-      case 'compressed': return (l: number, i: number) => (((Math.floor(l * params.quality) / params.quality) * params.multiplier) % 1) < (i / params.divider);
+      case "basic":
+        return (l: number) => l < params.treshold;
+      case "linear":
+        return (l: number, i: number) => l < i / params.divider;
+      case "looped":
+        return (l: number, i: number) =>
+          (l * params.multiplier) % 1 < i / params.divider;
+      case "compressed":
+        return (l: number, i: number) =>
+          ((Math.floor(l * params.quality) / params.quality) *
+            params.multiplier) %
+            1 <
+          i / params.divider;
     }
   })();
 
-  const createMatrix = (fn) => (new Array(width)).fill(null).map((_, x) => (
-    (new Array(height)).fill(null).map((__, y) => (
-      fn(x, y)
-    ))
-  ));
+  const createMatrix = (fn) =>
+    new Array(width)
+      .fill(null)
+      .map((_, x) => new Array(height).fill(null).map((__, y) => fn(x, y)));
 
-  const src = createMatrix((x, y) => params.imageData.data[4 * (width * y + x) + params.channel] / 256);
+  const src = createMatrix(
+    (x, y) => params.imageData.data[4 * (width * y + x) + params.channel] / 256
+  );
   const drawn = createMatrix(() => false);
 
   const isInCanvas = ({ x, y }) => x >= 0 && x < width && y >= 0 && y < height;
@@ -106,37 +117,47 @@ export const createSpiral = (params: SpiralParams) => {
   return Object.assign(state, { move });
 };
 
-export const getCoveredImageData = async (src: string, w: number, h: number): Promise<ImageData> => {
+export const getCoveredImageData = async (
+  src: string,
+  w: number,
+  h: number
+): Promise<ImageData> => {
   const image = new Image();
   image.src = src;
-  await new Promise((r) => { image.onload = r; });
+  await new Promise((r) => {
+    image.onload = r;
+  });
 
   const srcRatio = image.width / image.height;
   const dstRatio = w / h;
-  const srcWidth = srcRatio < dstRatio
-    ? image.width
-    : image.width * (dstRatio / srcRatio);
-  const srcHeight = srcRatio < dstRatio
-    ? image.height * (srcRatio / dstRatio)
-    : image.height;
+  const srcWidth =
+    srcRatio < dstRatio ? image.width : image.width * (dstRatio / srcRatio);
+  const srcHeight =
+    srcRatio < dstRatio ? image.height * (srcRatio / dstRatio) : image.height;
 
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement("canvas");
   canvas.width = w;
   canvas.height = h;
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   ctx.drawImage(
     image,
     (image.width - srcWidth) / 2,
     (image.height - srcHeight) / 2,
     srcWidth,
     srcHeight,
-    0, 0, w, h,
+    0,
+    0,
+    w,
+    h
   );
 
   return ctx.getImageData(0, 0, w, h);
 };
 
-const runImage = async (imageData: ImageData, ctx: CanvasRenderingContext2D): Promise<void> => {
+const runImage = async (
+  imageData: ImageData,
+  ctx: CanvasRenderingContext2D
+): Promise<void> => {
   const batch = 300;
 
   const channels = [0, 1, 2] as const;
@@ -147,16 +168,18 @@ const runImage = async (imageData: ImageData, ctx: CanvasRenderingContext2D): Pr
     const b = imageData.data[4 * index + 2];
     return `rgb(${r},${g},${b})`;
   });
-  const spirals = channels.map((channel) => createSpiral({
-    ctx,
-    imageData,
-    channel,
-    stopAt: 0.15,
-    kind: 'compressed',
-    divider: 10,
-    multiplier: 4,
-    quality: 10,
-  }));
+  const spirals = channels.map((channel) =>
+    createSpiral({
+      ctx,
+      imageData,
+      channel,
+      stopAt: 0.15,
+      kind: "compressed",
+      divider: 10,
+      multiplier: 4,
+      quality: 10,
+    })
+  );
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -172,17 +195,31 @@ const runImage = async (imageData: ImageData, ctx: CanvasRenderingContext2D): Pr
   }
 };
 
-export const runNewImage = async (src: string, ctx: CanvasRenderingContext2D, w: number, h: number) => {
+export const runNewImage = async (
+  src: string,
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number
+) => {
   const imageData = await getCoveredImageData(src, w, h);
   await runImage(imageData, ctx);
 };
 
-export const runOverlayImage = async (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+export const runOverlayImage = async (
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number
+) => {
   const imageData = ctx.getImageData(0, 0, w, h);
   await runImage(imageData, ctx);
 };
 
-export const runRevealImage = async (src: string, ctx: CanvasRenderingContext2D, w: number, h: number) => {
+export const runRevealImage = async (
+  src: string,
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number
+) => {
   const batch = 300;
 
   const imageData = await getCoveredImageData(src, w, h);
@@ -191,7 +228,7 @@ export const runRevealImage = async (src: string, ctx: CanvasRenderingContext2D,
     imageData,
     channel: 0,
     stopAt: 0.3,
-    kind: 'compressed',
+    kind: "compressed",
     divider: 10,
     multiplier: 6,
     quality: 5,
