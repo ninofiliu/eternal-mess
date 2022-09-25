@@ -194,8 +194,8 @@ export const runCopySegment = async (segment: PreparedCopySegment, ctx: CanvasRe
   await elementEvent(video, 'seeked');
   while (video.currentTime < segment.end) {
     ctx.drawImage(video, 0, 0);
-    video.currentTime += 1 / fps;
-    await elementEvent(video, 'seeked');
+    // @ts-ignore
+    await video.seekToNextFrame();
     await new Promise((resolve) => requestAnimationFrame(resolve));
   }
   if (renderRoot) video.remove();
