@@ -1,9 +1,14 @@
-import { allNames, defaultImages, eyeImages } from "./sources";
+import { allNames, defaultImages, eyeImages, images } from "./sources";
 import { Flavor } from "./types";
 
 const randomPick = <T>(from: T[], nb: number): T[] => {
+  const fromClone = [...from];
   const toSet = new Set<T>();
-  while (toSet.size < nb) toSet.add(from[~~(Math.random() * from.length)]);
+  while (toSet.size < nb && fromClone.length) {
+    const i = Math.floor(Math.random() * fromClone.length);
+    toSet.add(fromClone[i]);
+    fromClone.splice(i, 1);
+  }
   return [...toSet];
 };
 
@@ -1930,6 +1935,30 @@ const flavors: Record<string, Flavor> = {
       movement: 5,
       copyGlide: 2,
       repeat: 5,
+    },
+  },
+  termination: {
+    names: [
+      ...allNames.filter((name) => name.startsWith("termination")),
+      ...allNames.filter((name) => name.startsWith("termination")),
+      ...randomPick(
+        allNames.filter((name) =>
+          ["flexcalibur", "mauler"].some((start) => name.startsWith(start))
+        ),
+        30
+      ),
+    ],
+    imageNames: images.filter((name) => name.startsWith("termination")),
+    maxDuration: 5,
+    weigths: {
+      reveal: 5,
+      overlay: 3,
+      new: 0,
+      copy: 5,
+      glide: 5,
+      movement: 2,
+      copyGlide: 0,
+      repeat: 0,
     },
   },
 };

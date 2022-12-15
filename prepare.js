@@ -10,7 +10,12 @@ const maxPara = 15;
     return;
   }
   const [, , w, h] = process.argv;
-  const names = await fs.promises.readdir("./in/src");
+  const prepared = (await fs.promises.readdir(`./in/${w}x${h}`))
+    .filter((x) => x.endsWith(".shifts.json"))
+    .map((x) => x.substring(0, x.length - ".shifts.json".length));
+  const names = (await fs.promises.readdir("./in/src")).filter(
+    (x) => !prepared.includes(x)
+  );
 
   let port = 8082;
   const queue = [];
